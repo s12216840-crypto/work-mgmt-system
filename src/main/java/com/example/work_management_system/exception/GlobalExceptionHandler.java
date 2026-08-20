@@ -33,7 +33,6 @@ public class GlobalExceptionHandler {
             UserNotFoundException exception) {
 
         Map<String, String> error = new HashMap<>();
-
         error.put("error", exception.getMessage());
 
         return error;
@@ -44,7 +43,6 @@ public class GlobalExceptionHandler {
             OrganizationNotFoundException exception) {
 
         Map<String, String> error = new HashMap<>();
-
         error.put("error", exception.getMessage());
 
         return error;
@@ -55,14 +53,24 @@ public class GlobalExceptionHandler {
             TeamNotFoundException exception) {
 
         Map<String, String> error = new HashMap<>();
-
         error.put("error", exception.getMessage());
 
         return error;
     }
+
     @ExceptionHandler(TaskNotFoundException.class)
     public Map<String, String> handleTaskNotFound(
             TaskNotFoundException exception) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("error", exception.getMessage());
+
+        return error;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Map<String, String> handleIllegalArgument(
+            IllegalArgumentException exception) {
 
         Map<String, String> error = new HashMap<>();
         error.put("error", exception.getMessage());
