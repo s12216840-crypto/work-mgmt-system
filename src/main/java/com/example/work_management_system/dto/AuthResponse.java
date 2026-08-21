@@ -4,23 +4,19 @@ import com.example.work_management_system.entity.Role;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
-public class UserResponse {
+public class AuthResponse {
 
-    private Long id;
+    private String token;
+
+    private String tokenType;
+
+    private Long userId;
 
     private String name;
 
     private String email;
 
     private Role role;
-
-    private boolean active;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }

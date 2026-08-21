@@ -7,6 +7,7 @@ import com.example.work_management_system.exception.UserNotFoundException;
 import com.example.work_management_system.repository.UserRepository;
 import com.example.work_management_system.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,29 +17,26 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRequest request) {
 
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .active(true)
                 .build();
 
         User savedUser = userRepository.save(user);
 
-        return UserResponse.builder()
-                .id(savedUser.getId())
-                .name(savedUser.getName())
-                .email(savedUser.getEmail())
-                .role(savedUser.getRole())
-                .active(savedUser.isActive())
-                .createdAt(savedUser.getCreatedAt())
-                .updatedAt(savedUser.getUpdatedAt())
-                .build();
+        return mapToResponse(savedUser);
     }
 
     @Override
@@ -60,14 +58,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(Long id, UserRequest request) {
+    public UserResponse updateUser(
+            Long id,
+            UserRequest request) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
+        if (!user.getEmail().equals(request.getEmail())
+                && userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
         user.setRole(request.getRole());
 
         User updatedUser = userRepository.save(user);
