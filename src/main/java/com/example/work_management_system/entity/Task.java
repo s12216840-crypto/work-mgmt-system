@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -53,6 +55,25 @@ public class Task {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+
+    @OneToMany(
+            mappedBy = "task",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "task_labels",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
+    @Builder.Default
+    private List<Label> labels = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -64,3 +85,4 @@ public class Task {
         updatedAt = LocalDateTime.now();
     }
 }
+

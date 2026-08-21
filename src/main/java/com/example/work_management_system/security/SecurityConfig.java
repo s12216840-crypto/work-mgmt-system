@@ -2,6 +2,7 @@ package com.example.work_management_system.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -21,16 +22,12 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
-
-        this.jwtAuthenticationFilter =
-                jwtAuthenticationFilter;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -40,9 +37,7 @@ public class SecurityConfig {
             PasswordEncoder passwordEncoder) {
 
         DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(
-                        userDetailsService
-                );
+                new DaoAuthenticationProvider(userDetailsService);
 
         provider.setPasswordEncoder(passwordEncoder);
 
@@ -72,81 +67,71 @@ public class SecurityConfig {
                         )
                 )
 
-                .authenticationProvider(
-                        authenticationProvider
-                )
+                .authenticationProvider(authenticationProvider)
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Authentication
                         .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
                                 "/auth/register",
-                                "/auth/login"
+                                "/auth/login",
+                                "/error"
                         ).permitAll()
 
-                        // Error endpoint
-                        .requestMatchers("/error")
-                        .permitAll()
-
-                        // Users
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.GET,
-                                "/users/**"
+                                HttpMethod.GET,
+                                "/api/users/**"
                         ).authenticated()
 
                         .requestMatchers(
-                                "/users/**"
+                                "/api/users/**"
                         ).hasRole("ADMIN")
 
-                        // Organizations
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.GET,
-                                "/organizations/**"
+                                HttpMethod.GET,
+                                "/api/organizations/**"
                         ).authenticated()
 
                         .requestMatchers(
-                                "/organizations/**"
+                                "/api/organizations/**"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER"
                         )
 
-                        // Teams
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.GET,
-                                "/teams/**"
+                                HttpMethod.GET,
+                                "/api/teams/**"
                         ).authenticated()
 
                         .requestMatchers(
-                                "/teams/**"
+                                "/api/teams/**"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER"
                         )
 
-                        // Projects
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.GET,
-                                "/projects/**"
+                                HttpMethod.GET,
+                                "/api/projects/**"
                         ).authenticated()
 
                         .requestMatchers(
-                                "/projects/**"
+                                "/api/projects/**"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER"
                         )
 
-                        // Task search and viewing
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.GET,
-                                "/tasks/**"
+                                HttpMethod.GET,
+                                "/api/tasks/**"
                         ).authenticated()
 
-                        // Task creation/update
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.POST,
-                                "/tasks/**"
+                                HttpMethod.POST,
+                                "/api/tasks/**"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER",
@@ -154,44 +139,99 @@ public class SecurityConfig {
                         )
 
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.PUT,
-                                "/tasks/**"
+                                HttpMethod.PUT,
+                                "/api/tasks/**"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER",
                                 "DEVELOPER"
                         )
 
-                        // Task assignment
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.PATCH,
-                                "/tasks/*/assignee/*"
+                                HttpMethod.PATCH,
+                                "/api/tasks/*/assignee/*"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER"
                         )
 
-                        // Task status / priority
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.PATCH,
-                                "/tasks/*/status/*",
-                                "/tasks/*/priority/*"
+                                HttpMethod.PATCH,
+                                "/api/tasks/*/status/*",
+                                "/api/tasks/*/priority/*"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER",
                                 "DEVELOPER"
                         )
 
-                        // Delete tasks
                         .requestMatchers(
-                                org.springframework.http.HttpMethod.DELETE,
-                                "/tasks/**"
+                                HttpMethod.POST,
+                                "/api/tasks/*/comments"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "MANAGER",
+                                "DEVELOPER"
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/tasks/*/comments"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/tasks/comments/*"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "MANAGER",
+                                "DEVELOPER"
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/tasks/comments/*"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "MANAGER",
+                                "DEVELOPER"
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/tasks/*/labels"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/tasks/*/labels/*"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "MANAGER",
+                                "DEVELOPER"
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/tasks/*/labels/*"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "MANAGER",
+                                "DEVELOPER"
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/tasks/**"
                         ).hasAnyRole(
                                 "ADMIN",
                                 "MANAGER"
                         )
 
-                        // Everything else
+                        .requestMatchers(
+                                "/api/labels/**"
+                        ).authenticated()
+
                         .anyRequest().authenticated()
                 )
 
