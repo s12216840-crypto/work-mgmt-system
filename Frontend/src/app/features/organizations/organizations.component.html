@@ -1,0 +1,232 @@
+<div class="organizations-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Organizations</h1>
+      <p>Manage organizations in the system.</p>
+    </div>
+
+    <button
+      type="button"
+      class="primary-button"
+      (click)="openCreateForm()">
+      Create Organization
+    </button>
+
+  </div>
+
+  @if (successMessage) { <div class="success">
+  {{ successMessage }} </div>
+  }
+
+  @if (errorMessage) { <div class="error">
+  {{ errorMessage }} </div>
+  }
+
+  @if (loading) { <div class="state">
+  Loading organizations... </div>
+  }
+
+  @if (!loading && organizations.length === 0) { <div class="state">
+  No organizations found. </div>
+  }
+
+  @if (!loading && organizations.length > 0) {
+
+  <div class="table-container">
+
+    <table>
+
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      @for (organization of organizations; track organization.id) {
+
+      <tr>
+
+        <td>
+          {{ organization.id }}
+        </td>
+
+        <td>
+          {{ organization.name }}
+        </td>
+
+        <td>
+          {{ organization.description || '-' }}
+        </td>
+
+        <td class="actions">
+
+          <button
+            type="button"
+            (click)="viewOrganization(organization)">
+            View
+          </button>
+
+          <button
+            type="button"
+            (click)="openEditForm(organization)">
+            Edit
+          </button>
+
+          <button
+            type="button"
+            class="danger-button"
+            (click)="deleteOrganization(organization.id)">
+            Delete
+          </button>
+
+        </td>
+
+      </tr>
+
+      }
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+  }
+
+  @if (showForm) {
+
+
+  <div class="form-card">
+
+    <div class="form-header">
+
+      <h2>
+        {{ editingOrganization
+        ? 'Edit Organization'
+        : 'Create Organization' }}
+      </h2>
+
+      <button
+        type="button"
+        (click)="closeForm()">
+        X
+      </button>
+
+    </div>
+
+    <form
+      [formGroup]="organizationForm"
+      (ngSubmit)="submitForm()">
+
+      <div class="form-group">
+
+        <label for="name">
+          Name
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Enter organization name">
+
+        @if (isInvalid('name')) {
+        <small>
+          Organization name is required and must contain
+          at least 2 characters.
+        </small>
+        }
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="description">
+          Description
+        </label>
+
+        <textarea
+          id="description"
+          formControlName="description"
+          placeholder="Enter organization description">
+      </textarea>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          (click)="closeForm()">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="primary-button"
+          [disabled]="loading">
+
+          @if (loading) {
+          Saving...
+          } @else {
+          {{ editingOrganization
+          ? 'Update Organization'
+          : 'Create Organization' }}
+          }
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+  }
+
+  @if (selectedOrganization) {
+
+  <div class="details-card">
+
+    <div class="form-header">
+
+      <h2>
+        Organization Details
+      </h2>
+
+      <button
+        type="button"
+        (click)="closeDetails()">
+        X
+      </button>
+
+    </div>
+
+    <p>
+      <strong>ID:</strong>
+      {{ selectedOrganization.id }}
+    </p>
+
+    <p>
+      <strong>Name:</strong>
+      {{ selectedOrganization.name }}
+    </p>
+
+    <p>
+      <strong>Description:</strong>
+      {{ selectedOrganization.description || '-' }}
+    </p>
+
+  </div>
+
+  }
+
+</div>
