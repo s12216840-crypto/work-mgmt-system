@@ -7,4 +7,6 @@ public interface ApiPaths {
     String TEAMS = "/teams";
 
     String TASKS = "/tasks";
+
+    String AUTH = "/auth";
 }

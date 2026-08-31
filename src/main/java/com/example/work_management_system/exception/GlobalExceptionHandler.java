@@ -1,7 +1,9 @@
 package com.example.work_management_system.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationErrors(
             MethodArgumentNotValidException exception) {
 
@@ -29,51 +32,50 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleUserNotFound(
             UserNotFoundException exception) {
 
-        Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
-
-        return error;
+        return error(exception.getMessage());
     }
 
     @ExceptionHandler(OrganizationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleOrganizationNotFound(
             OrganizationNotFoundException exception) {
 
-        Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
-
-        return error;
+        return error(exception.getMessage());
     }
 
     @ExceptionHandler(TeamNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleTeamNotFound(
             TeamNotFoundException exception) {
 
-        Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
-
-        return error;
+        return error(exception.getMessage());
     }
 
     @ExceptionHandler(TaskNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleTaskNotFound(
             TaskNotFoundException exception) {
 
-        Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
-
-        return error;
+        return error(exception.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleIllegalArgument(
             IllegalArgumentException exception) {
 
+        return error(exception.getMessage());
+    }
+
+    private Map<String, String> error(String message) {
+
         Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
+
+        error.put("error", message);
 
         return error;
     }
