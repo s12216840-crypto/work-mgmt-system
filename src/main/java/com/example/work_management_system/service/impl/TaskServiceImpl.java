@@ -13,6 +13,10 @@ import com.example.work_management_system.repository.TaskRepository;
 import com.example.work_management_system.repository.UserRepository;
 import com.example.work_management_system.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,23 +32,17 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse createTask(TaskRequest request) {
 
-        Project project = projectRepository
-                .findById(request.getProjectId())
-                .orElseThrow(() ->
-                        new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        User reporter = userRepository
-                .findById(request.getReporterId())
-                .orElseThrow(() ->
-                        new RuntimeException("Reporter not found"));
+        User reporter = userRepository.findById(request.getReporterId())
+                .orElseThrow(() -> new RuntimeException("Reporter not found"));
 
         User assignee = null;
 
         if (request.getAssigneeId() != null) {
-            assignee = userRepository
-                    .findById(request.getAssigneeId())
-                    .orElseThrow(() ->
-                            new RuntimeException("Assignee not found"));
+            assignee = userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
         }
 
         Task task = Task.builder()
@@ -58,14 +56,11 @@ public class TaskServiceImpl implements TaskService {
                 .dueDate(request.getDueDate())
                 .build();
 
-        Task savedTask = taskRepository.save(task);
-
-        return mapToResponse(savedTask);
+        return mapToResponse(taskRepository.save(task));
     }
 
     @Override
     public List<TaskResponse> getAllTasks() {
-
         return taskRepository.findAll()
                 .stream()
                 .map(this::mapToResponse)
@@ -84,32 +79,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse updateTask(
-            Long id,
-            TaskRequest request) {
+    public TaskResponse updateTask(Long id, TaskRequest request) {
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() ->
                         new TaskNotFoundException(
                                 "Task not found with id: " + id));
 
-        Project project = projectRepository
-                .findById(request.getProjectId())
-                .orElseThrow(() ->
-                        new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        User reporter = userRepository
-                .findById(request.getReporterId())
-                .orElseThrow(() ->
-                        new RuntimeException("Reporter not found"));
+        User reporter = userRepository.findById(request.getReporterId())
+                .orElseThrow(() -> new RuntimeException("Reporter not found"));
 
         User assignee = null;
 
         if (request.getAssigneeId() != null) {
-            assignee = userRepository
-                    .findById(request.getAssigneeId())
-                    .orElseThrow(() ->
-                            new RuntimeException("Assignee not found"));
+            assignee = userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
         }
 
         task.setTitle(request.getTitle());
@@ -121,9 +108,7 @@ public class TaskServiceImpl implements TaskService {
         task.setPriority(request.getPriority());
         task.setDueDate(request.getDueDate());
 
-        Task updatedTask = taskRepository.save(task);
-
-        return mapToResponse(updatedTask);
+        return mapToResponse(taskRepository.save(task));
     }
 
     @Override
@@ -146,11 +131,9 @@ public class TaskServiceImpl implements TaskService {
                                 "Task not found with id: " + taskId));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         task.setAssignee(user);
-
         taskRepository.save(task);
     }
 
@@ -164,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
 
         try {
             task.setStatus(TaskStatus.valueOf(status.toUpperCase()));
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                     "Invalid task status: " + status);
         }
@@ -182,12 +165,48 @@ public class TaskServiceImpl implements TaskService {
 
         try {
             task.setPriority(TaskPriority.valueOf(priority.toUpperCase()));
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                     "Invalid task priority: " + priority);
         }
 
         taskRepository.save(task);
+    }
+
+    @Override
+    public Page<TaskResponse> searchTasks(
+            TaskStatus status,
+            TaskPriority priority,
+            Long assigneeId,
+            Long projectId,
+            String search,
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
+        Sort.Direction sortDirection;
+
+        try {
+            sortDirection = Sort.Direction.fromString(direction);
+        } catch (IllegalArgumentException e) {
+            sortDirection = Sort.Direction.ASC;
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortDirection, sortBy)
+        );
+
+        return taskRepository.searchTasks(
+                status,
+                priority,
+                assigneeId,
+                projectId,
+                search,
+                pageable
+        ).map(this::mapToResponse);
     }
 
     private TaskResponse mapToResponse(Task task) {
@@ -200,8 +219,7 @@ public class TaskServiceImpl implements TaskService {
                 .assigneeId(
                         task.getAssignee() != null
                                 ? task.getAssignee().getId()
-                                : null
-                )
+                                : null)
                 .reporterId(task.getReporter().getId())
                 .status(task.getStatus())
                 .priority(task.getPriority())
