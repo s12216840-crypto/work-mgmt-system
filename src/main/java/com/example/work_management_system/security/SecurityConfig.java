@@ -71,6 +71,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
+                        // Authentication
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
@@ -79,39 +80,22 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/users/**"
-                        ).authenticated()
-
+                        // Users - Milestone 2
                         .requestMatchers(
                                 "/api/users/**"
-                        ).hasRole("ADMIN")
+                        ).permitAll()
 
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/organizations/**"
-                        ).authenticated()
-
+                        // Organizations - Milestone 3
                         .requestMatchers(
                                 "/api/organizations/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
+                        ).permitAll()
 
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/teams/**"
-                        ).authenticated()
-
+                        // Teams - Milestone 3
                         .requestMatchers(
                                 "/api/teams/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
+                        ).permitAll()
 
+                        // Projects
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/projects/**"
@@ -124,6 +108,7 @@ public class SecurityConfig {
                                 "MANAGER"
                         )
 
+                        // Tasks
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/tasks/**"
@@ -165,6 +150,7 @@ public class SecurityConfig {
                                 "DEVELOPER"
                         )
 
+                        // Comments
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/tasks/*/comments"
@@ -197,6 +183,7 @@ public class SecurityConfig {
                                 "DEVELOPER"
                         )
 
+                        // Labels
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/tasks/*/labels"
@@ -220,6 +207,7 @@ public class SecurityConfig {
                                 "DEVELOPER"
                         )
 
+                        // Delete Tasks
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/tasks/**"
@@ -228,10 +216,12 @@ public class SecurityConfig {
                                 "MANAGER"
                         )
 
+                        // Labels
                         .requestMatchers(
                                 "/api/labels/**"
                         ).authenticated()
 
+                        // Everything else
                         .anyRequest().authenticated()
                 )
 
