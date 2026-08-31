@@ -1,0 +1,38 @@
+<header class="navbar">
+
+  <div class="brand">
+    Work Management System
+  </div>
+
+  <nav>
+    <a
+      routerLink="/home"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
+      Home
+    </a>
+
+    <a
+      routerLink="/users"
+      routerLinkActive="active">
+      Users
+    </a>
+
+    <a
+      routerLink="/organizations"
+      routerLinkActive="active">
+      Organizations
+    </a>
+
+    <a
+      routerLink="/teams"
+      routerLinkActive="active">
+      Teams
+    </a>
+  </nav>
+
+</header>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
