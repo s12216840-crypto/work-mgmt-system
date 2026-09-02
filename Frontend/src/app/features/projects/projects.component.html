@@ -1,0 +1,185 @@
+<section class="projects-page">
+  <div class="page-header">
+    <div>
+      <h1>Projects</h1>
+      <p>Manage projects and project members.</p>
+    </div>
+
+    <button class="primary-btn" (click)="openCreateForm()">
+      Add Project
+    </button>
+  </div>
+
+  @if (successMessage) {
+  <div class="success-message">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+  <div class="error-message">{{ errorMessage }}</div>
+  }
+
+  @if (showForm) {
+  <div class="form-card">
+    <h2>{{ editingProject ? 'Edit Project' : 'Create Project' }}</h2>
+
+    <div class="form-grid">
+      <div>
+        <label>Name</label>
+        <input [(ngModel)]="form.name" type="text" />
+      </div>
+
+      <div>
+        <label>Organization ID</label>
+        <input [(ngModel)]="form.organizationId" type="number" min="1" />
+      </div>
+
+      <div>
+        <label>Owner ID</label>
+        <input [(ngModel)]="form.ownerId" type="number" min="1" />
+      </div>
+
+      <div>
+        <label>Status</label>
+        <select [(ngModel)]="form.status">
+          @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label>Start Date</label>
+        <input [(ngModel)]="form.startDate" type="date" />
+      </div>
+
+      <div>
+        <label>End Date</label>
+        <input [(ngModel)]="form.endDate" type="date" />
+      </div>
+
+      <div class="full-width">
+        <label>Description</label>
+        <textarea [(ngModel)]="form.description"></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="primary-btn" (click)="submitForm()" [disabled]="loading">
+        {{ loading ? 'Saving...' : 'Save' }}
+      </button>
+
+      <button class="secondary-btn" (click)="closeForm()">
+        Cancel
+      </button>
+    </div>
+  </div>
+  }
+
+  @if (selectedProject) {
+  <div class="details-card">
+    <div class="details-header">
+      <h2>{{ selectedProject.name }}</h2>
+      <button class="secondary-btn" (click)="closeDetails()">Close</button>
+    </div>
+
+    <p>{{ selectedProject.description || 'No description.' }}</p>
+
+    <div class="details-grid">
+      <div><strong>ID:</strong> {{ selectedProject.id }}</div>
+      <div><strong>Organization:</strong> {{ selectedProject.organizationId }}</div>
+      <div><strong>Owner:</strong> {{ selectedProject.ownerId }}</div>
+      <div><strong>Status:</strong> {{ selectedProject.status }}</div>
+      <div><strong>Start:</strong> {{ selectedProject.startDate || '-' }}</div>
+      <div><strong>End:</strong> {{ selectedProject.endDate || '-' }}</div>
+    </div>
+
+    <div class="members-section">
+      <h3>Members</h3>
+
+      <div class="member-add">
+        <input
+          [(ngModel)]="memberUserId"
+          type="number"
+          min="1"
+          placeholder="User ID"
+        />
+
+        <button class="primary-btn" (click)="addMember()">
+          Add Member
+        </button>
+      </div>
+
+      @if (selectedProject.memberIds.length === 0) {
+      <p>No members yet.</p>
+      }
+
+      @for (userId of selectedProject.memberIds; track userId) {
+      <div class="member-row">
+        <span>User #{{ userId }}</span>
+
+        <button class="danger-btn" (click)="removeMember(userId)">
+          Remove
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  @if (loadingProjects) {
+  <div class="state">Loading projects...</div>
+  }
+
+  @if (!loadingProjects && projects.length === 0) {
+  <div class="state">No projects found.</div>
+  }
+
+  @if (!loadingProjects && projects.length > 0) {
+  <div class="table-card">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Organization</th>
+        <th>Owner</th>
+        <th>Status</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Members</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      @for (project of projects; track project.id) {
+      <tr>
+        <td>{{ project.id }}</td>
+        <td>{{ project.name }}</td>
+        <td>{{ project.organizationId }}</td>
+        <td>{{ project.ownerId }}</td>
+        <td>{{ project.status }}</td>
+        <td>{{ project.startDate || '-' }}</td>
+        <td>{{ project.endDate || '-' }}</td>
+        <td>{{ project.memberIds.length }}</td>
+
+        <td class="actions">
+          <button class="view-btn" (click)="viewProject(project)">
+            View
+          </button>
+
+          <button class="edit-btn" (click)="openEditForm(project)">
+            Edit
+          </button>
+
+          <button class="danger-btn" (click)="deleteProject(project)">
+            Delete
+          </button>
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+  }
+</section>
