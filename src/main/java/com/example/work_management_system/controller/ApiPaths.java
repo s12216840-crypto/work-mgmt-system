@@ -2,11 +2,11 @@ package com.example.work_management_system.controller;
 
 public interface ApiPaths {
 
-    String ORGANIZATIONS = "/organizations";
+    String ORGANIZATIONS = "/api/organizations";
 
-    String TEAMS = "/teams";
+    String TEAMS = "/api/teams";
 
-    String TASKS = "/tasks";
+    String TASKS = "/api/tasks";
 
-    String AUTH = "/auth";
+    String AUTH = "/api/auth";
 }

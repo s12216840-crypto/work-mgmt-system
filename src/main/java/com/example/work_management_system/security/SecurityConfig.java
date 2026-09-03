@@ -1,8 +1,8 @@
-package com.example.work_management_system.security;
+
+        package com.example.work_management_system.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -71,6 +71,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
+                        // Authentication
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
@@ -79,159 +80,37 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
+                        // Users
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/users/**"
-                        ).authenticated()
+                                "/api/users/**",
+                                "/users/**"
+                        ).permitAll()
 
+                        // Organizations
                         .requestMatchers(
-                                "/api/users/**"
-                        ).hasRole("ADMIN")
+                                "/api/organizations/**",
+                                "/organizations/**"
+                        ).permitAll()
 
+                        // Teams
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/organizations/**"
-                        ).authenticated()
+                                "/api/teams/**",
+                                "/teams/**"
+                        ).permitAll()
 
+                        // Projects - NO LOGIN TEMPORARILY
                         .requestMatchers(
-                                "/api/organizations/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
+                                "/api/projects/**",
+                                "/projects/**"
+                        ).permitAll()
 
+                        // Tasks - NO LOGIN TEMPORARILY
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/teams/**"
-                        ).authenticated()
+                                "/api/tasks/**",
+                                "/tasks/**"
+                        ).permitAll()
 
-                        .requestMatchers(
-                                "/api/teams/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/projects/**"
-                        ).authenticated()
-
-                        .requestMatchers(
-                                "/api/projects/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/tasks/**"
-                        ).authenticated()
-
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/tasks/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.PUT,
-                                "/api/tasks/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/tasks/*/assignee/*"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/tasks/*/status/*",
-                                "/api/tasks/*/priority/*"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/tasks/*/comments"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/tasks/*/comments"
-                        ).authenticated()
-
-                        .requestMatchers(
-                                HttpMethod.PUT,
-                                "/api/tasks/comments/*"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/api/tasks/comments/*"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/tasks/*/labels"
-                        ).authenticated()
-
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/tasks/*/labels/*"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/api/tasks/*/labels/*"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER",
-                                "DEVELOPER"
-                        )
-
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/api/tasks/**"
-                        ).hasAnyRole(
-                                "ADMIN",
-                                "MANAGER"
-                        )
-
-                        .requestMatchers(
-                                "/api/labels/**"
-                        ).authenticated()
-
+                        // Everything else
                         .anyRequest().authenticated()
                 )
 
@@ -243,3 +122,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+

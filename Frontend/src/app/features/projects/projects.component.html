@@ -1,0 +1,458 @@
+<section class="projects-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <span class="page-label">WORK MANAGEMENT</span>
+      <h1>Projects</h1>
+      <p>Manage projects and project members.</p>
+    </div>
+
+    <button class="primary-btn add-project-btn" (click)="openCreateForm()">
+      <span class="btn-icon">+</span>
+      Add Project
+    </button>
+  </div>
+
+
+  <!-- Messages -->
+  @if (successMessage) {
+  <div class="message success-message">
+    <span class="message-icon">✓</span>
+    <span>{{ successMessage }}</span>
+  </div>
+  }
+
+  @if (errorMessage) {
+  <div class="message error-message">
+    <span class="message-icon">!</span>
+    <span>{{ errorMessage }}</span>
+  </div>
+  }
+
+
+  <!-- Create / Edit Form -->
+  @if (showForm) {
+  <div class="form-card">
+
+    <div class="card-title">
+      <div>
+          <span class="section-label">
+            {{ editingProject ? 'PROJECT MANAGEMENT' : 'NEW PROJECT' }}
+          </span>
+
+        <h2>
+          {{ editingProject ? 'Edit Project' : 'Create Project' }}
+        </h2>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <!-- Name -->
+      <div class="form-field">
+        <label>Project Name</label>
+        <input
+          [(ngModel)]="form.name"
+          type="text"
+          placeholder="Enter project name"
+        />
+      </div>
+
+      <!-- Organization -->
+      <div class="form-field">
+        <label>Organization ID</label>
+        <input
+          [(ngModel)]="form.organizationId"
+          type="number"
+          min="1"
+          placeholder="Organization ID"
+        />
+      </div>
+
+      <!-- Owner -->
+      <div class="form-field">
+        <label>Owner ID</label>
+        <input
+          [(ngModel)]="form.ownerId"
+          type="number"
+          min="1"
+          placeholder="Owner ID"
+        />
+      </div>
+
+      <!-- Status -->
+      <div class="form-field">
+        <label>Status</label>
+
+        <select [(ngModel)]="form.status">
+          @for (status of statuses; track status) {
+          <option [value]="status">
+            {{ status }}
+          </option>
+          }
+        </select>
+      </div>
+
+      <!-- Start Date -->
+      <div class="form-field">
+        <label>Start Date</label>
+        <input
+          [(ngModel)]="form.startDate"
+          type="date"
+        />
+      </div>
+
+      <!-- End Date -->
+      <div class="form-field">
+        <label>End Date</label>
+        <input
+          [(ngModel)]="form.endDate"
+          type="date"
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="form-field full-width">
+        <label>Description</label>
+
+        <textarea
+          [(ngModel)]="form.description"
+          placeholder="Enter project description..."
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+
+      <button
+        class="primary-btn"
+        (click)="submitForm()"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Saving...' : 'Save Project' }}
+      </button>
+
+      <button
+        class="secondary-btn"
+        (click)="closeForm()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+  }
+
+
+  <!-- Project Details -->
+  @if (selectedProject) {
+
+  <div class="details-card">
+
+    <div class="details-header">
+
+      <div>
+        <span class="section-label">PROJECT DETAILS</span>
+        <h2>{{ selectedProject.name }}</h2>
+      </div>
+
+      <button
+        class="secondary-btn"
+        (click)="closeDetails()"
+      >
+        Close
+      </button>
+
+    </div>
+
+
+    <!-- Description -->
+    <div class="description-box">
+      <span class="info-label">Description</span>
+      <p>
+        {{ selectedProject.description || 'No description.' }}
+      </p>
+    </div>
+
+
+    <!-- Project Information -->
+    <div class="details-grid">
+
+      <div class="detail-item">
+        <span class="info-label">Project ID</span>
+        <strong>#{{ selectedProject.id }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span class="info-label">Organization</span>
+        <strong>#{{ selectedProject.organizationId }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span class="info-label">Owner</span>
+        <strong>#{{ selectedProject.ownerId }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span class="info-label">Status</span>
+        <strong>{{ selectedProject.status }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span class="info-label">Start Date</span>
+        <strong>{{ selectedProject.startDate || '-' }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span class="info-label">End Date</span>
+        <strong>{{ selectedProject.endDate || '-' }}</strong>
+      </div>
+
+    </div>
+
+
+    <!-- Members -->
+    <div class="members-section">
+
+      <div class="members-header">
+        <div>
+          <span class="section-label">TEAM</span>
+          <h3>Project Members</h3>
+        </div>
+
+        <span class="member-count">
+            {{ selectedProject.memberIds.length }} Members
+          </span>
+      </div>
+
+
+      <!-- Add Member -->
+      <div class="member-add">
+
+        <input
+          [(ngModel)]="memberUserId"
+          type="number"
+          min="1"
+          placeholder="Enter User ID"
+        />
+
+        <button
+          class="primary-btn"
+          (click)="addMember()"
+        >
+          Add Member
+        </button>
+
+      </div>
+
+
+      <!-- No Members -->
+      @if (selectedProject.memberIds.length === 0) {
+      <div class="empty-members">
+        <div class="empty-icon">👥</div>
+        <p>No members yet.</p>
+      </div>
+      }
+
+
+      <!-- Members List -->
+      @for (userId of selectedProject.memberIds; track userId) {
+
+      <div class="member-row">
+
+        <div class="member-info">
+          <div class="user-avatar">
+            U
+          </div>
+
+          <div>
+            <strong>User #{{ userId }}</strong>
+            <span>Project Member</span>
+          </div>
+        </div>
+
+        <button
+          class="danger-btn"
+          (click)="removeMember(userId)"
+        >
+          Remove
+        </button>
+
+      </div>
+
+      }
+
+    </div>
+
+  </div>
+  }
+
+
+  <!-- Loading -->
+  @if (loadingProjects) {
+  <div class="state-card">
+    <div class="loading-spinner"></div>
+    <p>Loading projects...</p>
+  </div>
+  }
+
+
+  <!-- Empty -->
+  @if (!loadingProjects && projects.length === 0) {
+  <div class="state-card">
+    <div class="empty-state-icon">📁</div>
+    <h3>No projects found</h3>
+    <p>Create your first project to get started.</p>
+
+    <button
+      class="primary-btn"
+      (click)="openCreateForm()"
+    >
+      Add Project
+    </button>
+  </div>
+  }
+
+
+  <!-- Projects Table -->
+  @if (!loadingProjects && projects.length > 0) {
+
+  <div class="table-card">
+
+    <div class="table-header">
+
+      <div>
+        <span class="section-label">OVERVIEW</span>
+        <h2>All Projects</h2>
+      </div>
+
+      <span class="project-count">
+          {{ projects.length }} Projects
+        </span>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Project</th>
+          <th>Organization</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Members</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        @for (project of projects; track project.id) {
+
+        <tr>
+
+          <td>
+                  <span class="project-id">
+                    #{{ project.id }}
+                  </span>
+          </td>
+
+          <td>
+            <div class="project-name">
+              <div class="project-icon">
+                P
+              </div>
+
+              <strong>
+                {{ project.name }}
+              </strong>
+            </div>
+          </td>
+
+          <td>
+            #{{ project.organizationId }}
+          </td>
+
+          <td>
+            #{{ project.ownerId }}
+          </td>
+
+          <td>
+                  <span
+                    class="status-badge"
+                    [class.status-planned]="project.status === 'PLANNED'"
+                    [class.status-progress]="project.status === 'IN_PROGRESS'"
+                    [class.status-completed]="project.status === 'COMPLETED'"
+                  >
+                    {{ project.status }}
+                  </span>
+          </td>
+
+          <td>
+            {{ project.startDate || '-' }}
+          </td>
+
+          <td>
+            {{ project.endDate || '-' }}
+          </td>
+
+          <td>
+                  <span class="members-count">
+                    👥 {{ project.memberIds.length }}
+                  </span>
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="view-btn"
+                (click)="viewProject(project)"
+              >
+                View
+              </button>
+
+              <button
+                class="edit-btn"
+                (click)="openEditForm(project)"
+              >
+                Edit
+              </button>
+
+              <button
+                class="danger-btn"
+                (click)="deleteProject(project)"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+        }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  }
+
+</section>
