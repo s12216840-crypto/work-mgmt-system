@@ -1,10 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Team, TeamRequest } from '../../core/models/team.model';
 import { OrganizationResponse } from '../../core/models/organization.model';
@@ -119,17 +115,13 @@ export class TeamsComponent implements OnInit {
   }
 
   getOrganizationName(organizationId: number): string {
-    const organization = this.organizations.find(
-      org => org.id === organizationId
-    );
+    const organization = this.organizations.find((org) => org.id === organizationId);
 
     return organization?.name ?? '-';
   }
 
   getUserName(userId: number): string {
-    const user = this.users.find(
-      user => user.id === userId
-    );
+    const user = this.users.find((user) => user.id === userId);
 
     return user?.name ?? `User #${userId}`;
   }
@@ -140,9 +132,7 @@ export class TeamsComponent implements OnInit {
     this.teamForm.reset({
       name: '',
       description: '',
-      organizationId: this.organizations.length > 0
-        ? this.organizations[0].id
-        : 0,
+      organizationId: this.organizations.length > 0 ? this.organizations[0].id : 0,
     });
 
     this.showForm = true;
@@ -234,9 +224,7 @@ export class TeamsComponent implements OnInit {
   }
 
   deleteTeam(id: number): void {
-    const confirmed = confirm(
-      'Are you sure you want to delete this team?'
-    );
+    const confirmed = confirm('Are you sure you want to delete this team?');
 
     if (!confirmed) {
       return;
@@ -272,10 +260,7 @@ export class TeamsComponent implements OnInit {
       next: () => {
         this.successMessage = 'User added to team successfully.';
 
-        if (
-          this.selectedTeam?.id === teamId &&
-          !this.selectedTeam.userIds.includes(userId)
-        ) {
+        if (this.selectedTeam?.id === teamId && !this.selectedTeam.userIds.includes(userId)) {
           this.selectedTeam = {
             ...this.selectedTeam,
             userIds: [...this.selectedTeam.userIds, userId],
@@ -295,9 +280,7 @@ export class TeamsComponent implements OnInit {
   }
 
   removeUserFromTeam(teamId: number, userId: number): void {
-    const confirmed = confirm(
-      'Are you sure you want to remove this user from the team?'
-    );
+    const confirmed = confirm('Are you sure you want to remove this user from the team?');
 
     if (!confirmed) {
       return;
@@ -313,9 +296,7 @@ export class TeamsComponent implements OnInit {
         if (this.selectedTeam?.id === teamId) {
           this.selectedTeam = {
             ...this.selectedTeam,
-            userIds: this.selectedTeam.userIds.filter(
-              id => id !== userId
-            ),
+            userIds: this.selectedTeam.userIds.filter((id) => id !== userId),
           };
         }
 
@@ -341,4 +322,3 @@ export class TeamsComponent implements OnInit {
     return !!control && control.invalid && control.touched;
   }
 }
-

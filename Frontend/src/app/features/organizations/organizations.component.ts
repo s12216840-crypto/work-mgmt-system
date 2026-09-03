@@ -39,236 +39,178 @@ export class OrganizationsComponent implements OnInit {
   ngOnInit(): void {
     console.log('ORGANIZATIONS COMPONENT LOADED');
 
-this.loadOrganizations();
+    this.loadOrganizations();
   }
 
   loadOrganizations(): void {
-this.loading = true;
-this.errorMessage = '';
+    this.loading = true;
+    this.errorMessage = '';
 
-console.log('LOADING ORGANIZATIONS...');
+    console.log('LOADING ORGANIZATIONS...');
 
-this.organizationService.getOrganizations().subscribe({
+    this.organizationService.getOrganizations().subscribe({
+      next: (organizations) => {
+        console.log('ORGANIZATIONS RECEIVED:', organizations);
 
-  next: (organizations) => {
+        this.organizations = [...organizations];
 
-    console.log('ORGANIZATIONS RECEIVED:', organizations);
+        this.loading = false;
 
-    this.organizations = [...organizations];
+        console.log('ORGANIZATIONS COUNT:', this.organizations.length);
 
-    this.loading = false;
+        console.log('LOADING FINISHED:', this.loading);
 
-    console.log(
-      'ORGANIZATIONS COUNT:',
-      this.organizations.length
-    );
+        this.cdr.detectChanges();
+      },
 
-    console.log(
-      'LOADING FINISHED:',
-      this.loading
-    );
+      error: (error) => {
+        console.error('FAILED TO LOAD ORGANIZATIONS:', error);
 
-    this.cdr.detectChanges();
-  },
+        this.errorMessage = 'Failed to load organizations.';
 
-  error: (error) => {
+        this.loading = false;
 
-    console.error(
-      'FAILED TO LOAD ORGANIZATIONS:',
-      error
-    );
-
-    this.errorMessage =
-      'Failed to load organizations.';
-
-    this.loading = false;
-
-    this.cdr.detectChanges();
-  },
-});
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   openCreateForm(): void {
-this.editingOrganization = null;
+    this.editingOrganization = null;
 
-this.organizationForm.reset({
-  name: '',
-  description: '',
-});
+    this.organizationForm.reset({
+      name: '',
+      description: '',
+    });
 
-this.showForm = true;
+    this.showForm = true;
 
-this.errorMessage = '';
-this.successMessage = '';
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
   openEditForm(organization: OrganizationResponse): void {
-this.editingOrganization = organization;
+    this.editingOrganization = organization;
 
-this.organizationForm.reset({
-  name: organization.name,
-  description: organization.description ?? '',
-});
+    this.organizationForm.reset({
+      name: organization.name,
+      description: organization.description ?? '',
+    });
 
-this.showForm = true;
+    this.showForm = true;
 
-this.errorMessage = '';
-this.successMessage = '';
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
   closeForm(): void {
-this.showForm = false;
+    this.showForm = false;
 
-this.editingOrganization = null;
+    this.editingOrganization = null;
 
-this.organizationForm.reset({
-  name: '',
-  description: '',
-});
+    this.organizationForm.reset({
+      name: '',
+      description: '',
+    });
   }
 
   submitForm(): void {
-if (this.organizationForm.invalid) {
+    if (this.organizationForm.invalid) {
+      this.organizationForm.markAllAsTouched();
 
-  this.organizationForm.markAllAsTouched();
+      return;
+    }
 
-  return;
-}
+    const request: OrganizationRequest = this.organizationForm.getRawValue();
 
-const request: OrganizationRequest =
-  this.organizationForm.getRawValue();
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-this.loading = true;
-this.errorMessage = '';
-this.successMessage = '';
+    if (this.editingOrganization) {
+      this.organizationService.updateOrganization(this.editingOrganization.id, request).subscribe({
+        next: () => {
+          this.successMessage = 'Organization updated successfully.';
 
-if (this.editingOrganization) {
+          this.closeForm();
 
-  this.organizationService
-    .updateOrganization(
-      this.editingOrganization.id,
-      request
-    )
-    .subscribe({
+          this.loadOrganizations();
+        },
 
-      next: () => {
+        error: (error) => {
+          console.error('FAILED TO UPDATE ORGANIZATION:', error);
 
-        this.successMessage =
-          'Organization updated successfully.';
+          this.errorMessage = 'Failed to update organization.';
 
-        this.closeForm();
+          this.loading = false;
 
-        this.loadOrganizations();
-      },
+          this.cdr.detectChanges();
+        },
+      });
+    } else {
+      this.organizationService.createOrganization(request).subscribe({
+        next: () => {
+          this.successMessage = 'Organization created successfully.';
 
-      error: (error) => {
+          this.closeForm();
 
-        console.error(
-          'FAILED TO UPDATE ORGANIZATION:',
-          error
-        );
+          this.loadOrganizations();
+        },
 
-        this.errorMessage =
-          'Failed to update organization.';
+        error: (error) => {
+          console.error('FAILED TO CREATE ORGANIZATION:', error);
 
-        this.loading = false;
+          this.errorMessage = 'Failed to create organization.';
 
-        this.cdr.detectChanges();
-      },
-    });
+          this.loading = false;
 
-} else {
-
-  this.organizationService
-    .createOrganization(request)
-    .subscribe({
-
-      next: () => {
-
-        this.successMessage =
-          'Organization created successfully.';
-
-        this.closeForm();
-
-        this.loadOrganizations();
-      },
-
-      error: (error) => {
-
-        console.error(
-          'FAILED TO CREATE ORGANIZATION:',
-          error
-        );
-
-        this.errorMessage =
-          'Failed to create organization.';
-
-        this.loading = false;
-
-        this.cdr.detectChanges();
-      },
-    });
-}
+          this.cdr.detectChanges();
+        },
+      });
+    }
   }
 
   viewOrganization(organization: OrganizationResponse): void {
-this.selectedOrganization = organization;
+    this.selectedOrganization = organization;
   }
 
   closeDetails(): void {
-this.selectedOrganization = null;
+    this.selectedOrganization = null;
   }
 
   deleteOrganization(id: number): void {
-const confirmed = confirm(
-  'Are you sure you want to delete this organization?'
-);
+    const confirmed = confirm('Are you sure you want to delete this organization?');
 
-if (!confirmed) {
-  return;
-}
+    if (!confirmed) {
+      return;
+    }
 
-this.loading = true;
-this.errorMessage = '';
-this.successMessage = '';
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-this.organizationService
-  .deleteOrganization(id)
-  .subscribe({
+    this.organizationService.deleteOrganization(id).subscribe({
+      next: () => {
+        this.successMessage = 'Organization deleted successfully.';
 
-    next: () => {
+        this.loadOrganizations();
+      },
 
-      this.successMessage =
-        'Organization deleted successfully.';
+      error: (error) => {
+        console.error('FAILED TO DELETE ORGANIZATION:', error);
 
-      this.loadOrganizations();
-    },
+        this.errorMessage = 'Failed to delete organization.';
 
-    error: (error) => {
+        this.loading = false;
 
-      console.error(
-        'FAILED TO DELETE ORGANIZATION:',
-        error
-      );
-
-      this.errorMessage =
-        'Failed to delete organization.';
-
-      this.loading = false;
-
-      this.cdr.detectChanges();
-    },
-  });
-
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   isInvalid(controlName: string): boolean {
-const control =
-  this.organizationForm.get(controlName);
+    const control = this.organizationForm.get(controlName);
 
-return !!control &&
-  control.invalid &&
-  control.touched;
-
+    return !!control && control.invalid && control.touched;
   }
 }

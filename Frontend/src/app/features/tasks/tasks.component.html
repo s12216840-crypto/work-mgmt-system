@@ -1,4 +1,5 @@
 <section class="tasks-page">
+
   <div class="page-header">
     <div>
       <h1>Tasks</h1>
@@ -6,19 +7,23 @@
     </div>
 
     <button class="primary-btn" (click)="openCreateForm()">
-      Add Task
+      + Add Task
     </button>
+
+
   </div>
 
-  @if (successMessage) {
-  <div class="success-message">{{ successMessage }}</div>
+  @if (successMessage) { <div class="success-message">
+  {{ successMessage }} </div>
   }
 
-  @if (errorMessage) {
-  <div class="error-message">{{ errorMessage }}</div>
+  @if (errorMessage) { <div class="error-message">
+  {{ errorMessage }} </div>
   }
 
   <div class="filters-card">
+
+
     <div>
       <label>Search</label>
       <input
@@ -32,10 +37,14 @@
       <label>Status</label>
       <select
         [(ngModel)]="filterStatus"
-        (ngModelChange)="page = 1; applyFilters()">
+        (ngModelChange)="page = 1; applyFilters()"
+      >
         <option value="">All</option>
+
         @for (status of statuses; track status) {
-        <option [value]="status">{{ status }}</option>
+        <option [value]="status">
+          {{ status }}
+        </option>
         }
       </select>
     </div>
@@ -44,10 +53,14 @@
       <label>Priority</label>
       <select
         [(ngModel)]="filterPriority"
-        (ngModelChange)="page = 1; applyFilters()">
+        (ngModelChange)="page = 1; applyFilters()"
+      >
         <option value="">All</option>
+
         @for (priority of priorities; track priority) {
-        <option [value]="priority">{{ priority }}</option>
+        <option [value]="priority">
+          {{ priority }}
+        </option>
         }
       </select>
     </div>
@@ -73,30 +86,50 @@
     </div>
 
     <div class="filter-action">
-      <button class="secondary-btn" (click)="clearFilters()">
+      <button
+        class="secondary-btn"
+        (click)="clearFilters()"
+      >
         Clear Filters
       </button>
     </div>
+
   </div>
 
   @if (showForm) {
+
   <div class="form-card">
-    <h2>{{ editingTask ? 'Edit Task' : 'Create Task' }}</h2>
+
+    <h2>
+      {{ editingTask ? 'Edit Task' : 'Create Task' }}
+    </h2>
 
     <div class="form-grid">
+
       <div>
         <label>Title</label>
-        <input [(ngModel)]="form.title" />
+        <input
+          [(ngModel)]="form.title"
+          placeholder="Enter task title"
+        />
       </div>
 
       <div>
         <label>Project ID</label>
-        <input [(ngModel)]="form.projectId" type="number" min="1" />
+        <input
+          [(ngModel)]="form.projectId"
+          type="number"
+          min="1"
+        />
       </div>
 
       <div>
         <label>Reporter ID</label>
-        <input [(ngModel)]="form.reporterId" type="number" min="1" />
+        <input
+          [(ngModel)]="form.reporterId"
+          type="number"
+          min="1"
+        />
       </div>
 
       <div>
@@ -110,180 +143,364 @@
 
       <div>
         <label>Status</label>
+
         <select [(ngModel)]="form.status">
+
           @for (status of statuses; track status) {
-          <option [value]="status">{{ status }}</option>
+          <option [value]="status">
+            {{ status }}
+          </option>
           }
+
         </select>
+
       </div>
 
       <div>
         <label>Priority</label>
+
         <select [(ngModel)]="form.priority">
+
           @for (priority of priorities; track priority) {
-          <option [value]="priority">{{ priority }}</option>
+          <option [value]="priority">
+            {{ priority }}
+          </option>
           }
+
         </select>
+
       </div>
 
       <div>
         <label>Due Date</label>
-        <input [(ngModel)]="form.dueDate" type="date" />
+
+        <input
+          [(ngModel)]="form.dueDate"
+          type="date"
+        />
+
       </div>
 
       <div class="full-width">
+
         <label>Description</label>
-        <textarea [(ngModel)]="form.description"></textarea>
+
+        <textarea
+          [(ngModel)]="form.description"
+          placeholder="Enter task description..."
+        ></textarea>
+
       </div>
+
     </div>
 
     <div class="form-actions">
-      <button class="primary-btn" (click)="submitForm()" [disabled]="loading">
-        {{ loading ? 'Saving...' : 'Save' }}
+
+      <button
+        class="primary-btn"
+        (click)="submitForm()"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Saving...' : 'Save Task' }}
       </button>
 
-      <button class="secondary-btn" (click)="closeForm()">
+      <button
+        class="secondary-btn"
+        (click)="closeForm()"
+      >
         Cancel
       </button>
+
     </div>
+
   </div>
+
+
   }
 
   @if (selectedTask) {
+
+
   <div class="details-card">
+
     <div class="details-header">
+
       <div>
-        <h2>{{ selectedTask.title }}</h2>
-        <p>{{ selectedTask.description || 'No description.' }}</p>
+
+        <h2>
+          {{ selectedTask.title }}
+        </h2>
+
+        <p>
+          {{ selectedTask.description || 'No description.' }}
+        </p>
+
       </div>
 
-      <button class="secondary-btn" (click)="closeDetails()">
+      <button
+        class="secondary-btn"
+        (click)="closeDetails()"
+      >
         Close
       </button>
+
     </div>
 
     <div class="details-grid">
-      <div><strong>Project:</strong> {{ selectedTask.projectId }}</div>
-      <div><strong>Reporter:</strong> {{ selectedTask.reporterId }}</div>
-      <div><strong>Assignee:</strong> {{ selectedTask.assigneeId || 'Unassigned' }}</div>
-      <div><strong>Due:</strong> {{ selectedTask.dueDate || '-' }}</div>
+
+      <div>
+        <strong>Project</strong>
+        {{ selectedTask.projectId }}
+      </div>
+
+      <div>
+        <strong>Reporter</strong>
+        {{ selectedTask.reporterId }}
+      </div>
+
+      <div>
+        <strong>Assignee</strong>
+        {{ selectedTask.assigneeId || 'Unassigned' }}
+      </div>
+
+      <div>
+        <strong>Due Date</strong>
+        {{ selectedTask.dueDate || '-' }}
+      </div>
+
     </div>
+
   </div>
+
+
   }
 
   @if (loadingTasks) {
-  <div class="state">Loading tasks...</div>
+
+
+  <div class="state">
+    Loading tasks...
+  </div>
+
+
   }
 
   @if (!loadingTasks && filteredTasks.length === 0) {
-  <div class="state">No tasks found.</div>
+
+
+  <div class="state">
+    No tasks found.
+  </div>
+
   }
 
   @if (!loadingTasks && filteredTasks.length > 0) {
+
+
   <div class="table-card">
-    <table>
-      <thead>
-      <tr>
-        <th>
-          <button class="sort-btn" (click)="changeSort('title')">
-            Title
-          </button>
-        </th>
-        <th>
-          <button class="sort-btn" (click)="changeSort('project')">
-            Project
-          </button>
-        </th>
-        <th>
-          <button class="sort-btn" (click)="changeSort('assignee')">
-            Assignee
-          </button>
-        </th>
-        <th>
-          <button class="sort-btn" (click)="changeSort('status')">
-            Status
-          </button>
-        </th>
-        <th>
-          <button class="sort-btn" (click)="changeSort('priority')">
-            Priority
-          </button>
-        </th>
-        <th>Due Date</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
 
-      <tbody>
-      @for (task of paginatedTasks; track task.id) {
-      <tr>
-        <td>{{ task.title }}</td>
-        <td>{{ task.projectId }}</td>
-        <td>{{ task.assigneeId || 'Unassigned' }}</td>
+    <div class="table-container">
 
-        <td>
-          <select
-            [ngModel]="task.status"
-            (ngModelChange)="updateStatus(task, $event)">
-            @for (status of statuses; track status) {
-            <option [value]="status">{{ status }}</option>
-            }
-          </select>
-        </td>
+      <table>
 
-        <td>
-          <select
-            [ngModel]="task.priority"
-            (ngModelChange)="updatePriority(task, $event)">
-            @for (priority of priorities; track priority) {
-            <option [value]="priority">{{ priority }}</option>
-            }
-          </select>
-        </td>
+        <thead>
 
-        <td>{{ task.dueDate || '-' }}</td>
+        <tr>
 
-        <td class="actions">
-          <button class="view-btn" (click)="viewTask(task)">
-            View
-          </button>
+          <th>
+            <button
+              class="sort-btn"
+              (click)="changeSort('title')"
+            >
+              Title
+            </button>
+          </th>
 
-          <button class="edit-btn" (click)="openEditForm(task)">
-            Edit
-          </button>
+          <th>
+            <button
+              class="sort-btn"
+              (click)="changeSort('project')"
+            >
+              Project
+            </button>
+          </th>
 
-          <button
-            class="assign-btn"
-            (click)="assignTask(task, 1)">
-            Assign #1
-          </button>
+          <th>
+            <button
+              class="sort-btn"
+              (click)="changeSort('reporter')"
+            >
+              Reporter
+            </button>
+          </th>
 
-          <button class="danger-btn" (click)="deleteTask(task)">
-            Delete
-          </button>
-        </td>
-      </tr>
-      }
-      </tbody>
-    </table>
+          <th>
+            <button
+              class="sort-btn"
+              (click)="changeSort('assignee')"
+            >
+              Assignee
+            </button>
+          </th>
+
+          <th>
+            <button
+              class="sort-btn"
+              (click)="changeSort('status')"
+            >
+              Status
+            </button>
+          </th>
+
+          <th>
+            <button
+              class="sort-btn"
+              (click)="changeSort('priority')"
+            >
+              Priority
+            </button>
+          </th>
+
+          <th>
+            Due Date
+          </th>
+
+          <th>
+            Actions
+          </th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        @for (task of paginatedTasks; track task.id) {
+
+        <tr>
+
+          <td>
+            <strong>
+              {{ task.title }}
+            </strong>
+          </td>
+
+          <td>
+            #{{ task.projectId }}
+          </td>
+
+          <td>
+            #{{ task.reporterId }}
+          </td>
+
+          <td>
+            {{ task.assigneeId || 'Unassigned' }}
+          </td>
+
+          <td>
+
+            <select
+              [ngModel]="task.status"
+              (ngModelChange)="updateStatus(task, $event)"
+            >
+
+              @for (status of statuses; track status) {
+
+              <option [value]="status">
+                {{ status }}
+              </option>
+
+              }
+
+            </select>
+
+          </td>
+
+          <td>
+
+            <select
+              [ngModel]="task.priority"
+              (ngModelChange)="updatePriority(task, $event)"
+            >
+
+              @for (priority of priorities; track priority) {
+
+              <option [value]="priority">
+                {{ priority }}
+              </option>
+
+              }
+
+            </select>
+
+          </td>
+
+          <td>
+            {{ task.dueDate || '-' }}
+          </td>
+
+          <td class="actions">
+
+            <button
+              class="view-btn"
+              (click)="viewTask(task)"
+            >
+              View
+            </button>
+
+            <button
+              class="edit-btn"
+              (click)="openEditForm(task)"
+            >
+              Edit
+            </button>
+
+            <button
+              class="danger-btn"
+              (click)="deleteTask(task)"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+        }
+
+        </tbody>
+
+      </table>
+
+    </div>
 
     <div class="pagination">
+
       <button
         class="secondary-btn"
         (click)="previousPage()"
-        [disabled]="page === 1">
+        [disabled]="page === 1"
+      >
         Previous
       </button>
 
-      <span>Page {{ page }} of {{ totalPages }}</span>
+      <span>
+      Page {{ page }} of {{ totalPages }}
+    </span>
 
       <button
         class="secondary-btn"
         (click)="nextPage()"
-        [disabled]="page === totalPages">
+        [disabled]="page === totalPages"
+      >
         Next
       </button>
+
     </div>
+
   </div>
+
+
   }
+
 </section>

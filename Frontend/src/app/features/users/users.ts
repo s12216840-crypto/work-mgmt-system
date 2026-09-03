@@ -43,73 +43,72 @@ export class Users implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-console.log('LOADING USERS...');
+    console.log('LOADING USERS...');
 
-this.userService.getUsers().subscribe({
-  next: (users) => {
-    console.log('USERS RECEIVED:', users);
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        console.log('USERS RECEIVED:', users);
 
-    this.users = [...users];
-    this.loading = false;
+        this.users = [...users];
+        this.loading = false;
 
-    console.log('USERS COUNT:', this.users.length);
-    console.log('LOADING FINISHED:', this.loading);
+        console.log('USERS COUNT:', this.users.length);
+        console.log('LOADING FINISHED:', this.loading);
 
-    this.cdr.detectChanges();
-  },
+        this.cdr.detectChanges();
+      },
 
-  error: (error) => {
-    console.error('FAILED TO LOAD USERS:', error);
+      error: (error) => {
+        console.error('FAILED TO LOAD USERS:', error);
 
-    this.errorMessage = 'Failed to load users.';
-    this.loading = false;
+        this.errorMessage = 'Failed to load users.';
+        this.loading = false;
 
-    this.cdr.detectChanges();
-  },
-});
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   openCreateForm(): void {
     this.editingUser = null;
 
+    this.userForm.reset({
+      name: '',
+      email: '',
+      password: '',
+      role: 'VIEWER',
+    });
 
-this.userForm.reset({
-  name: '',
-  email: '',
-  password: '',
-  role: 'VIEWER',
-});
-
-this.showForm = true;
-this.errorMessage = '';
-this.successMessage = '';
+    this.showForm = true;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
   openEditForm(user: User): void {
     this.editingUser = user;
 
-this.userForm.reset({
-  name: user.name,
-  email: user.email,
-  password: '',
-  role: user.role,
-});
+    this.userForm.reset({
+      name: user.name,
+      email: user.email,
+      password: '',
+      role: user.role,
+    });
 
-this.showForm = true;
-this.errorMessage = '';
-this.successMessage = '';
+    this.showForm = true;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
   closeForm(): void {
     this.showForm = false;
     this.editingUser = null;
 
-this.userForm.reset({
-  name: '',
-  email: '',
-  password: '',
-  role: 'VIEWER',
-});
+    this.userForm.reset({
+      name: '',
+      email: '',
+      password: '',
+      role: 'VIEWER',
+    });
   }
 
   submitForm(): void {
@@ -118,39 +117,39 @@ this.userForm.reset({
       return;
     }
 
-const request: UserRequest = this.userForm.getRawValue();
+    const request: UserRequest = this.userForm.getRawValue();
 
-this.loading = true;
-this.errorMessage = '';
-this.successMessage = '';
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-if (this.editingUser) {
-  this.userService.updateUser(this.editingUser.id, request).subscribe({
-    next: () => {
-      this.successMessage = 'User updated successfully.';
-      this.closeForm();
-      this.loadUsers();
-    },
-    error: (error) => {
-      console.error('FAILED TO UPDATE USER:', error);
-      this.errorMessage = 'Failed to update user.';
-      this.loading = false;
-    },
-  });
-} else {
-  this.userService.createUser(request).subscribe({
-    next: () => {
-      this.successMessage = 'User created successfully.';
-      this.closeForm();
-      this.loadUsers();
-    },
-    error: (error) => {
-      console.error('FAILED TO CREATE USER:', error);
-      this.errorMessage = 'Failed to create user.';
-      this.loading = false;
-    },
-  });
-}
+    if (this.editingUser) {
+      this.userService.updateUser(this.editingUser.id, request).subscribe({
+        next: () => {
+          this.successMessage = 'User updated successfully.';
+          this.closeForm();
+          this.loadUsers();
+        },
+        error: (error) => {
+          console.error('FAILED TO UPDATE USER:', error);
+          this.errorMessage = 'Failed to update user.';
+          this.loading = false;
+        },
+      });
+    } else {
+      this.userService.createUser(request).subscribe({
+        next: () => {
+          this.successMessage = 'User created successfully.';
+          this.closeForm();
+          this.loadUsers();
+        },
+        error: (error) => {
+          console.error('FAILED TO CREATE USER:', error);
+          this.errorMessage = 'Failed to create user.';
+          this.loading = false;
+        },
+      });
+    }
   }
 
   viewUser(user: User): void {
@@ -164,32 +163,30 @@ if (this.editingUser) {
   deactivateUser(id: number): void {
     const confirmed = confirm('Are you sure you want to deactivate this user?');
 
-if (!confirmed) {
-  return;
-}
+    if (!confirmed) {
+      return;
+    }
 
-this.loading = true;
-this.errorMessage = '';
-this.successMessage = '';
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-this.userService.deactivateUser(id).subscribe({
-  next: () => {
-    this.successMessage = 'User deactivated successfully.';
-    this.loadUsers();
-  },
-  error: (error) => {
-    console.error('FAILED TO DEACTIVATE USER:', error);
-    this.errorMessage = 'Failed to deactivate user.';
-    this.loading = false;
-  },
-});
-
+    this.userService.deactivateUser(id).subscribe({
+      next: () => {
+        this.successMessage = 'User deactivated successfully.';
+        this.loadUsers();
+      },
+      error: (error) => {
+        console.error('FAILED TO DEACTIVATE USER:', error);
+        this.errorMessage = 'Failed to deactivate user.';
+        this.loading = false;
+      },
+    });
   }
 
   isInvalid(controlName: string): boolean {
     const control = this.userForm.get(controlName);
 
-return !!control && control.invalid && control.touched;
-
+    return !!control && control.invalid && control.touched;
   }
 }
