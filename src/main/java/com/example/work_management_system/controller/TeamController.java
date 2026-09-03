@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(ApiPaths.TEAMS)
+@RequestMapping("/teams")
 @RequiredArgsConstructor
 public class TeamController {
 
